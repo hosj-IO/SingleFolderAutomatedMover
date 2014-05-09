@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SingleFolderAutomatedMover
 {
-    public class Crypto
+    public static class Crypto
     {
-        private static readonly byte[] Salt = Encoding.ASCII.GetBytes("o6806642kbM7c5");
+        private static byte[] _salt = Encoding.ASCII.GetBytes("o6806642kbM7c5");
 
         /// <summary>
         /// Encrypt the given string using AES.  The string can be decrypted using 
@@ -15,20 +18,20 @@ namespace SingleFolderAutomatedMover
         /// </summary>
         /// <param name="plainText">The text to encrypt.</param>
         /// <param name="sharedSecret">A password used to generate a key for encryption.</param>
-        public static string EncryptStringAes(string plainText, string sharedSecret)
+        public static string EncryptStringAES(string plainText, string sharedSecret)
         {
             if (string.IsNullOrEmpty(plainText))
                 throw new ArgumentNullException("plainText");
             if (string.IsNullOrEmpty(sharedSecret))
                 throw new ArgumentNullException("sharedSecret");
 
-            string outStr; // Encrypted string to return
-            RijndaelManaged aesAlg = null; // RijndaelManaged object used to encrypt the data.
+            string outStr = null;                       // Encrypted string to return
+            RijndaelManaged aesAlg = null;              // RijndaelManaged object used to encrypt the data.
 
             try
             {
                 // generate the key from the shared secret and the salt
-                var key = new Rfc2898DeriveBytes(sharedSecret, Salt);
+                Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(sharedSecret, _salt);
 
                 // Create a RijndaelManaged object
                 aesAlg = new RijndaelManaged();
@@ -38,14 +41,14 @@ namespace SingleFolderAutomatedMover
                 ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
 
                 // Create the streams used for encryption.
-                using (var msEncrypt = new MemoryStream())
+                using (MemoryStream msEncrypt = new MemoryStream())
                 {
                     // prepend the IV
                     msEncrypt.Write(BitConverter.GetBytes(aesAlg.IV.Length), 0, sizeof(int));
                     msEncrypt.Write(aesAlg.IV, 0, aesAlg.IV.Length);
-                    using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
                     {
-                        using (var swEncrypt = new StreamWriter(csEncrypt))
+                        using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
                         {
                             //Write all data to the stream.
                             swEncrypt.Write(plainText);
@@ -71,7 +74,7 @@ namespace SingleFolderAutomatedMover
         /// </summary>
         /// <param name="cipherText">The text to decrypt.</param>
         /// <param name="sharedSecret">A password used to generate a key for decryption.</param>
-        public static string DecryptStringAes(string cipherText, string sharedSecret)
+        public static string DecryptStringAES(string cipherText, string sharedSecret)
         {
             if (string.IsNullOrEmpty(cipherText))
                 throw new ArgumentNullException("cipherText");
@@ -84,16 +87,16 @@ namespace SingleFolderAutomatedMover
 
             // Declare the string used to hold
             // the decrypted text.
-            string plaintext;
+            string plaintext = null;
 
             try
             {
                 // generate the key from the shared secret and the salt
-                var key = new Rfc2898DeriveBytes(sharedSecret, Salt);
+                Rfc2898DeriveBytes key = new Rfc2898DeriveBytes(sharedSecret, _salt);
 
                 // Create the streams used for decryption.                
                 byte[] bytes = Convert.FromBase64String(cipherText);
-                using (var msDecrypt = new MemoryStream(bytes))
+                using (MemoryStream msDecrypt = new MemoryStream(bytes))
                 {
                     // Create a RijndaelManaged object
                     // with the specified key and IV.
@@ -103,9 +106,9 @@ namespace SingleFolderAutomatedMover
                     aesAlg.IV = ReadByteArray(msDecrypt);
                     // Create a decrytor to perform the stream transform.
                     ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
-                    using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
                     {
-                        using (var srDecrypt = new StreamReader(csDecrypt))
+                        using (StreamReader srDecrypt = new StreamReader(csDecrypt))
 
                             // Read the decrypted bytes from the decrypting stream
                             // and place them in a string.
@@ -125,19 +128,24 @@ namespace SingleFolderAutomatedMover
 
         private static byte[] ReadByteArray(Stream s)
         {
-            var rawLength = new byte[sizeof(int)];
+            byte[] rawLength = new byte[sizeof(int)];
             if (s.Read(rawLength, 0, rawLength.Length) != rawLength.Length)
             {
                 throw new SystemException("Stream did not contain properly formatted byte array");
             }
 
-            var buffer = new byte[BitConverter.ToInt32(rawLength, 0)];
+            byte[] buffer = new byte[BitConverter.ToInt32(rawLength, 0)];
             if (s.Read(buffer, 0, buffer.Length) != buffer.Length)
             {
                 throw new SystemException("Did not read byte array properly");
             }
 
             return buffer;
+        }
+
+        internal static string EncryptStringAes(string p1, string p2)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -50,28 +50,45 @@ namespace SingleFolderAutomatedMover
                     MessageBox.Show(Resources.FormMain_FormMain_Load_No_settings_saved__stopping_program_);
                     Application.Exit();
                 }
+                else
+                {
+                    LoadConfig(confCollection);
+                }
             }
             else
             {
-                //Load configuration
-                if (ConfigurationManager.AppSettings["RequiresDifferentCredentials"] == "true")
-                {
-                    MoveRule = new MoveRule(ConfigurationManager.AppSettings["Path From"],
-                        ConfigurationManager.AppSettings["Path To"], false);
-                }
-                else
-                {
-                    MoveRule = new MoveRule(ConfigurationManager.AppSettings["Path From"],
-                        ConfigurationManager.AppSettings["Path To"],
-                        ConfigurationManager.AppSettings["Username"],
-                        ConfigurationManager.AppSettings[Crypto.DecryptStringAes("Password", "sFo6SSZfUD7IFG2sRvCi3sPaqcANul5GdTlVroa4DgPZSqcqbejKVuenKHat1yr0")], true);
-                }
+                LoadConfig(confCollection);
 
             }
 
             notifyIconMain.Icon = Icon;
             notifyIconMain.Text = Resources.FormMain_FormMain_Load_Simple_AutoMover;
         }
+
+        private void LoadConfig(KeyValueConfigurationCollection confCollection)
+        {
+            //Load configuration
+            if (ConfigurationManager.AppSettings["RequiresDifferentCredentials"] != "true")
+            {
+                if (ConfigurationManager.AppSettings["Path From"] == ConfigurationManager.AppSettings["Path to"])
+                {
+                    MessageBox.Show("Path from is the same as path to. Deleting the config, restart the application.");
+                    confCollection.Clear();
+                    Application.Exit();
+                }
+                MoveRule = new MoveRule(ConfigurationManager.AppSettings["Path From"],
+                    ConfigurationManager.AppSettings["Path To"], false);
+            }
+            else
+            {
+                MoveRule = new MoveRule(ConfigurationManager.AppSettings["Path From"],
+                    ConfigurationManager.AppSettings["Path To"],
+                    ConfigurationManager.AppSettings["Username"],
+                    Crypto.DecryptStringAES(ConfigurationManager.AppSettings["Password"],"s"), true);
+            }
+        }
+
+
 
         private void buttonStart_Click(object sender, EventArgs e)
         {
@@ -109,8 +126,7 @@ namespace SingleFolderAutomatedMover
                     DoWork(e.FullPath);
                 }
 
-                LogtoListBox(e.Name + Resources.FormMain_fsw_Changed__was_ +
-                                                                   e.ChangeType + Resources.NewLine);
+                
 
             }
             finally
@@ -207,7 +223,7 @@ namespace SingleFolderAutomatedMover
             //everything in here has elevated privileges
 
             Microsoft.VisualBasic.FileIO.FileSystem.MoveFile(fullPath, toPath, Microsoft.VisualBasic.FileIO.UIOption.AllDialogs);
-            LogtoListBox(fullPath + " has been moved to remote location.");
+            LogtoListBox(fullPath + " has been moved to remote location."); 
 
         }
 
