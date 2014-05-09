@@ -28,7 +28,8 @@ namespace SingleFolderAutomatedMover
         {
             if (textBoxFrom.Text != "" &&
                 textBoxTo.Text != "" &&
-                textBoxFrom.Text != textBoxTo.Text)
+                textBoxFrom.Text != textBoxTo.Text &&
+                Core.IsSubfolder(textBoxFrom.Text,textBoxTo.Text))
             {
                 //Always required fields are good.
                 Configuration configManager = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);

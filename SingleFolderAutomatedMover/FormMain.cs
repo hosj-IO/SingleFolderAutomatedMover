@@ -70,7 +70,8 @@ namespace SingleFolderAutomatedMover
             //Load configuration
             if (ConfigurationManager.AppSettings["RequiresDifferentCredentials"] != "true")
             {
-                if (ConfigurationManager.AppSettings["Path From"] == ConfigurationManager.AppSettings["Path to"])
+                if (ConfigurationManager.AppSettings["Path From"] == ConfigurationManager.AppSettings["Path to"] && 
+                    Core.IsSubfolder(ConfigurationManager.AppSettings["Path From"],ConfigurationManager.AppSettings["Path To"]  ))
                 {
                     MessageBox.Show("Path from is the same as path to. Deleting the config, restart the application.");
                     confCollection.Clear();
