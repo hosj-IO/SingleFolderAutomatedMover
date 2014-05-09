@@ -17,7 +17,7 @@
         {
         }
 
-        public MoveRule(string pathFrom, string username, string password, string pathTo, bool requiresDifferentCredentials)
+        public MoveRule(string pathFrom, string pathTo, string username, string password, bool requiresDifferentCredentials)
         {
             PathFrom = pathFrom;
             Username = username;

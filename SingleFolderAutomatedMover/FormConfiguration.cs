@@ -28,26 +28,41 @@ namespace SingleFolderAutomatedMover
         {
             if (textBoxFrom.Text != "" &&
                 textBoxTo.Text != "" &&
-                textBoxUsername.Text != "" &&
-                textBoxPassword.Text != "")
+                textBoxFrom.Text != textBoxTo.Text)
             {
+                //Always required fields are good.
                 Configuration configManager = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
                 KeyValueConfigurationCollection confCollection = configManager.AppSettings.Settings;
-
-
-                confCollection.Add("Path From", textBoxFrom.Text);
-                confCollection.Add("Path To", textBoxTo.Text);
                 if (checkBoxCred.Checked)
                 {
-                    confCollection.Add("Username", textBoxUsername.Text);
-                    confCollection.Add("Password", Crypto.EncryptStringAes(textBoxPassword.Text, "sFo6SSZfUD7IFG2sRvCi3sPaqcANul5GdTlVroa4DgPZSqcqbejKVuenKHat1yr0"));
-                    //configManager.ConnectionStrings.ConnectionStrings.Add(new ConnectionStringSettings("Password",textBoxPassword.Text));
-                    confCollection.Add("RequiresDifferentCredentials", "true");
+                    if (textBoxUsername.Text != "" &&
+                    textBoxPassword.Text != "")
+                    {
+                        //Checkbox is checked, Password and Username have to filled in.
+                        confCollection.Add("Username", textBoxUsername.Text);
+                        confCollection.Add("Password", Crypto.EncryptStringAES(textBoxPassword.Text, "s"));
+                        //configManager.ConnectionStrings.ConnectionStrings.Add(new ConnectionStringSettings("Password",textBoxPassword.Text));
+                        confCollection.Add("RequiresDifferentCredentials", "true");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please fill in the username and password.");
+                        return;
+                    }
+
                 }
                 else
                 {
                     confCollection.Add("RequiresDifferentCredentials", "false");
                 }
+
+
+
+
+                confCollection.Add("Path From", textBoxFrom.Text);
+                confCollection.Add("Path To", textBoxTo.Text);
+
+
 
                 configManager.Save(ConfigurationSaveMode.Modified);
                 ConfigurationManager.RefreshSection(configManager.AppSettings.SectionInformation.Name);
