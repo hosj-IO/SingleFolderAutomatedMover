@@ -7,6 +7,8 @@ namespace SingleFolderAutomatedMover
 {
     public partial class FormConfiguration : Form
     {
+
+        private bool reusePassword = false;
         public FormConfiguration()
         {
             InitializeComponent();
@@ -18,10 +20,35 @@ namespace SingleFolderAutomatedMover
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Text = Resources.FormConfiguration_FormConfiguration_Load_Set_Configuration;
 
+            labelPasswordChange.Visible = false;
             labelUsername.Visible = false;
             labelPassword.Visible = false;
             textBoxUsername.Visible = false;
             textBoxPassword.Visible = false;
+
+            Configuration configManager = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            KeyValueConfigurationCollection confCollection = configManager.AppSettings.Settings;
+
+            if (confCollection.Count != 0)
+                FillInForm();
+        }
+
+        private void FillInForm()
+        {
+            textBoxFrom.Text = ConfigurationManager.AppSettings["Path From"];
+            textBoxTo.Text = ConfigurationManager.AppSettings["Path To"];
+            if (ConfigurationManager.AppSettings["RequiresDifferentCredentials"] == "true")
+            {
+                labelUsername.Visible = true;
+                labelPassword.Visible = true;
+                textBoxUsername.Visible = true;
+                textBoxPassword.Visible = true;
+
+                textBoxUsername.Text = ConfigurationManager.AppSettings["Username"];
+                textBoxPassword.Text = "******";
+                labelPasswordChange.Visible = true;
+                reusePassword = true;
+            }
         }
 
         private void buttonSave_Click(object sender, EventArgs e)
@@ -29,19 +56,35 @@ namespace SingleFolderAutomatedMover
             if (textBoxFrom.Text != "" &&
                 textBoxTo.Text != "" &&
                 textBoxFrom.Text != textBoxTo.Text &&
-                Core.IsSubfolder(textBoxFrom.Text,textBoxTo.Text))
+                !Core.IsSubfolder(textBoxFrom.Text, textBoxTo.Text))
             {
                 //Always required fields are good.
                 Configuration configManager = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
                 KeyValueConfigurationCollection confCollection = configManager.AppSettings.Settings;
+
                 if (checkBoxCred.Checked)
                 {
                     if (textBoxUsername.Text != "" &&
                     textBoxPassword.Text != "")
                     {
-                        //Checkbox is checked, Password and Username have to filled in.
-                        confCollection.Add("Username", textBoxUsername.Text);
-                        confCollection.Add("Password", Crypto.EncryptStringAES(textBoxPassword.Text, "s"));
+                        //Save username and password if wanted
+                        if (reusePassword)
+                        {
+                            var username = ConfigurationManager.AppSettings["Username"];
+                            var password = ConfigurationManager.AppSettings["Password"];
+                            confCollection.Clear();
+                            confCollection.Add("Username", username);
+                            confCollection.Add("Password", password);
+                        }
+                        else
+                        {
+                            //Clear all previous configurations
+                            confCollection.Clear();
+                            //Checkbox is checked, Password and Username have to filled in.
+                            confCollection.Add("Username", textBoxUsername.Text);
+                            confCollection.Add("Password", Crypto.EncryptStringAES(textBoxPassword.Text, "s"));
+                        }
+
                         //configManager.ConnectionStrings.ConnectionStrings.Add(new ConnectionStringSettings("Password",textBoxPassword.Text));
                         confCollection.Add("RequiresDifferentCredentials", "true");
                     }
@@ -54,6 +97,8 @@ namespace SingleFolderAutomatedMover
                 }
                 else
                 {
+                    //Clear all previous configurations
+                    confCollection.Clear();
                     confCollection.Add("RequiresDifferentCredentials", "false");
                 }
 
@@ -118,7 +163,6 @@ namespace SingleFolderAutomatedMover
                 textBoxPassword.Visible = false;
             }
         }
-
 
     }
 }

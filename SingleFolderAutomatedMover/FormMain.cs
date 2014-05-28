@@ -15,6 +15,7 @@ namespace SingleFolderAutomatedMover
     public partial class FormMain : Form
     {
         private FileSystemWatcher _fsw;
+        private bool isRunning = false;
         //private const int LOGON_TYPE_NEW_CREDENTIALS = 9;
         //private const int LOGON32_PROVIDER_WINNT50 = 3;
 
@@ -70,11 +71,11 @@ namespace SingleFolderAutomatedMover
             //Load configuration
             if (ConfigurationManager.AppSettings["RequiresDifferentCredentials"] != "true")
             {
-                if (ConfigurationManager.AppSettings["Path From"] == ConfigurationManager.AppSettings["Path to"] && 
-                    Core.IsSubfolder(ConfigurationManager.AppSettings["Path From"],ConfigurationManager.AppSettings["Path To"]  ))
+                if (ConfigurationManager.AppSettings["Path From"] == ConfigurationManager.AppSettings["Path to"] &&
+                    Core.IsSubfolder(ConfigurationManager.AppSettings["Path From"], ConfigurationManager.AppSettings["Path To"]))
                 {
                     MessageBox.Show("Path from is the same as path to. Deleting the config, restart the application.");
-                    confCollection.Clear();
+                    //confCollection.Clear(); -> Only clears the var?
                     Application.Exit();
                 }
                 MoveRule = new MoveRule(ConfigurationManager.AppSettings["Path From"],
@@ -85,14 +86,13 @@ namespace SingleFolderAutomatedMover
                 MoveRule = new MoveRule(ConfigurationManager.AppSettings["Path From"],
                     ConfigurationManager.AppSettings["Path To"],
                     ConfigurationManager.AppSettings["Username"],
-                    Crypto.DecryptStringAES(ConfigurationManager.AppSettings["Password"],"s"), true);
+                    Crypto.DecryptStringAES(ConfigurationManager.AppSettings["Password"], "s"), true);
             }
         }
 
-
-
         private void buttonStart_Click(object sender, EventArgs e)
         {
+
             _fsw = new FileSystemWatcher(MoveRule.PathFrom)
                 {
                     NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
@@ -108,7 +108,7 @@ namespace SingleFolderAutomatedMover
             buttonStop.Enabled = true;
             buttonStart.Enabled = false;
             listBoxLogging.Items.Insert(0, Resources.FormMain_button_ServiceHasStarted);
-
+            isRunning = true;
         }
 
         private void fsw_Changed(object sender, FileSystemEventArgs e)
@@ -127,7 +127,7 @@ namespace SingleFolderAutomatedMover
                     DoWork(e.FullPath);
                 }
 
-                
+
 
             }
             finally
@@ -144,10 +144,18 @@ namespace SingleFolderAutomatedMover
 
         private void buttonStop_Click(object sender, EventArgs e)
         {
-            _fsw.Dispose();
+            try
+            {
+                _fsw.Dispose();
+            }
+            catch (Exception ex)
+            {
+                //Error is thrown because fsw wasnt running
+            }
             buttonStart.Enabled = true;
             buttonStop.Enabled = false;
             listBoxLogging.Items.Insert(0, Resources.FormMain_buttonStop_Click_);
+            isRunning = false;
         }
 
         public void DoWorkUnderImpersonation(string fullpath)
@@ -155,10 +163,8 @@ namespace SingleFolderAutomatedMover
             //elevate privileges before doing file copy to handle domain security
             WindowsImpersonationContext impersonationContext = null;
             IntPtr userHandle = IntPtr.Zero;
-            // ReSharper disable InconsistentNaming
             const int LOGON32_PROVIDER_DEFAULT = 0;
             const int LOGON32_LOGON_INTERACTIVE = 2;
-            // ReSharper restore InconsistentNaming
             string domain = "";
             string user = MoveRule.Username;
             string password = MoveRule.Password;//"LBhaUrOFIRm3Wi7";
@@ -217,14 +223,13 @@ namespace SingleFolderAutomatedMover
             }
         }
 
-
         private void DoWork(string fullPath)
         {
             var toPath = MoveRule.PathTo + "\\" + Path.GetFileName(fullPath);
             //everything in here has elevated privileges
 
             Microsoft.VisualBasic.FileIO.FileSystem.MoveFile(fullPath, toPath, Microsoft.VisualBasic.FileIO.UIOption.AllDialogs);
-            LogtoListBox(fullPath + " has been moved to remote location."); 
+            LogtoListBox(fullPath + " has been moved to remote location.");
 
         }
 
@@ -248,6 +253,23 @@ namespace SingleFolderAutomatedMover
             ShowInTaskbar = true;
             WindowState = FormWindowState.Normal;
             notifyIconMain.Visible = false;
+        }
+
+        private void buttonConfiguration_Click(object sender, EventArgs e)
+        {
+            //Not so cool
+            LogtoListBox("Shutting down service, opening configuration.");
+            if (isRunning)
+                buttonStop_Click(null, null);
+            Configuration configManager = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            KeyValueConfigurationCollection confCollection = configManager.AppSettings.Settings;
+
+            var formConfig = new FormConfiguration();
+            if (formConfig.ShowDialog() == DialogResult.OK)
+            {
+                LoadConfig(confCollection);
+
+            }
         }
 
     }
