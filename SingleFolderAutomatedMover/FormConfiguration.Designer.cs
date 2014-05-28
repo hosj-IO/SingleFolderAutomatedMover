@@ -42,6 +42,7 @@
             this.buttonFrom = new System.Windows.Forms.Button();
             this.buttonTo = new System.Windows.Forms.Button();
             this.checkBoxCred = new System.Windows.Forms.CheckBox();
+            this.labelPasswordChange = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -82,7 +83,7 @@
             // 
             // buttonSave
             // 
-            this.buttonSave.Location = new System.Drawing.Point(12, 159);
+            this.buttonSave.Location = new System.Drawing.Point(12, 192);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(75, 23);
             this.buttonSave.TabIndex = 5;
@@ -93,7 +94,7 @@
             // buttonCancel
             // 
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(181, 159);
+            this.buttonCancel.Location = new System.Drawing.Point(189, 192);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 6;
@@ -106,7 +107,7 @@
             this.textBoxPassword.Location = new System.Drawing.Point(76, 133);
             this.textBoxPassword.Name = "textBoxPassword";
             this.textBoxPassword.PasswordChar = '*';
-            this.textBoxPassword.Size = new System.Drawing.Size(188, 20);
+            this.textBoxPassword.Size = new System.Drawing.Size(204, 20);
             this.textBoxPassword.TabIndex = 4;
             // 
             // textBoxTo
@@ -114,7 +115,7 @@
             this.textBoxTo.Enabled = false;
             this.textBoxTo.Location = new System.Drawing.Point(76, 38);
             this.textBoxTo.Name = "textBoxTo";
-            this.textBoxTo.Size = new System.Drawing.Size(188, 20);
+            this.textBoxTo.Size = new System.Drawing.Size(204, 20);
             this.textBoxTo.TabIndex = 110;
             // 
             // textBoxFrom
@@ -122,19 +123,19 @@
             this.textBoxFrom.Enabled = false;
             this.textBoxFrom.Location = new System.Drawing.Point(76, 12);
             this.textBoxFrom.Name = "textBoxFrom";
-            this.textBoxFrom.Size = new System.Drawing.Size(188, 20);
+            this.textBoxFrom.Size = new System.Drawing.Size(204, 20);
             this.textBoxFrom.TabIndex = 100;
             // 
             // textBoxUsername
             // 
             this.textBoxUsername.Location = new System.Drawing.Point(76, 107);
             this.textBoxUsername.Name = "textBoxUsername";
-            this.textBoxUsername.Size = new System.Drawing.Size(188, 20);
+            this.textBoxUsername.Size = new System.Drawing.Size(204, 20);
             this.textBoxUsername.TabIndex = 3;
             // 
             // buttonFrom
             // 
-            this.buttonFrom.Location = new System.Drawing.Point(270, 10);
+            this.buttonFrom.Location = new System.Drawing.Point(286, 10);
             this.buttonFrom.Name = "buttonFrom";
             this.buttonFrom.Size = new System.Drawing.Size(75, 23);
             this.buttonFrom.TabIndex = 1;
@@ -144,7 +145,7 @@
             // 
             // buttonTo
             // 
-            this.buttonTo.Location = new System.Drawing.Point(270, 36);
+            this.buttonTo.Location = new System.Drawing.Point(286, 36);
             this.buttonTo.Name = "buttonTo";
             this.buttonTo.Size = new System.Drawing.Size(75, 23);
             this.buttonTo.TabIndex = 2;
@@ -163,13 +164,23 @@
             this.checkBoxCred.UseVisualStyleBackColor = true;
             this.checkBoxCred.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
+            // labelPasswordChange
+            // 
+            this.labelPasswordChange.AutoSize = true;
+            this.labelPasswordChange.Location = new System.Drawing.Point(9, 167);
+            this.labelPasswordChange.Name = "labelPasswordChange";
+            this.labelPasswordChange.Size = new System.Drawing.Size(352, 13);
+            this.labelPasswordChange.TabIndex = 152;
+            this.labelPasswordChange.Text = "The password is the same unless you change the username or password.";
+            // 
             // FormConfiguration
             // 
             this.AcceptButton = this.buttonSave;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(355, 199);
+            this.ClientSize = new System.Drawing.Size(361, 227);
+            this.Controls.Add(this.labelPasswordChange);
             this.Controls.Add(this.checkBoxCred);
             this.Controls.Add(this.buttonTo);
             this.Controls.Add(this.buttonFrom);
@@ -207,5 +218,6 @@
         private System.Windows.Forms.Button buttonFrom;
         private System.Windows.Forms.Button buttonTo;
         private System.Windows.Forms.CheckBox checkBoxCred;
+        private System.Windows.Forms.Label labelPasswordChange;
     }
 }

@@ -35,6 +35,7 @@
             this.buttonStop = new System.Windows.Forms.Button();
             this.listBoxLogging = new System.Windows.Forms.ListBox();
             this.notifyIconMain = new System.Windows.Forms.NotifyIcon(this.components);
+            this.buttonConfiguration = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // buttonStart
@@ -81,11 +82,22 @@
             this.notifyIconMain.Visible = true;
             this.notifyIconMain.DoubleClick += new System.EventHandler(this.notifyIconMain_DoubleClick);
             // 
+            // buttonConfiguration
+            // 
+            this.buttonConfiguration.Location = new System.Drawing.Point(781, 12);
+            this.buttonConfiguration.Name = "buttonConfiguration";
+            this.buttonConfiguration.Size = new System.Drawing.Size(112, 62);
+            this.buttonConfiguration.TabIndex = 6;
+            this.buttonConfiguration.Text = "Configuration";
+            this.buttonConfiguration.UseVisualStyleBackColor = true;
+            this.buttonConfiguration.Click += new System.EventHandler(this.buttonConfiguration_Click);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(905, 334);
+            this.Controls.Add(this.buttonConfiguration);
             this.Controls.Add(this.listBoxLogging);
             this.Controls.Add(this.buttonStop);
             this.Controls.Add(this.labelStatus);
@@ -107,6 +119,7 @@
         private System.Windows.Forms.Button buttonStop;
         private System.Windows.Forms.ListBox listBoxLogging;
         private System.Windows.Forms.NotifyIcon notifyIconMain;
+        private System.Windows.Forms.Button buttonConfiguration;
     }
 }
 
