@@ -38,7 +38,7 @@ namespace SingleFolderAutomatedMover
             Text = Resources.FormMain_FormMain_Load_Automated_Mover;
             FormBorderStyle = FormBorderStyle.FixedSingle;
             buttonStop.Enabled = false;
-
+            try { 
             Configuration configManager = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             KeyValueConfigurationCollection confCollection = configManager.AppSettings.Settings;
 
@@ -61,6 +61,12 @@ namespace SingleFolderAutomatedMover
                 LoadConfig(confCollection);
 
             }
+            }
+            catch (Exception ex)
+            {                
+                Application.Exit();
+            }
+
 
             notifyIconMain.Icon = Icon;
             notifyIconMain.Text = Resources.FormMain_FormMain_Load_Simple_AutoMover;
@@ -69,13 +75,16 @@ namespace SingleFolderAutomatedMover
         private void LoadConfig(KeyValueConfigurationCollection confCollection)
         {
             //Load configuration
+            Configuration configManager = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             if (ConfigurationManager.AppSettings["RequiresDifferentCredentials"] != "true")
             {
                 if (ConfigurationManager.AppSettings["Path From"] == ConfigurationManager.AppSettings["Path to"] &&
                     Core.IsSubfolder(ConfigurationManager.AppSettings["Path From"], ConfigurationManager.AppSettings["Path To"]))
                 {
                     MessageBox.Show("Path from is the same as path to. Deleting the config, restart the application.");
-                    //confCollection.Clear(); -> Only clears the var?
+                    confCollection.Clear();
+                    configManager.Save(ConfigurationSaveMode.Modified);
+                    ConfigurationManager.RefreshSection(configManager.AppSettings.SectionInformation.Name);
                     Application.Exit();
                 }
                 MoveRule = new MoveRule(ConfigurationManager.AppSettings["Path From"],
