@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Windows.Forms;
 using SingleFolderAutomatedMover.Properties;
+using System.Security;
 
 namespace SingleFolderAutomatedMover
 {
@@ -82,7 +83,7 @@ namespace SingleFolderAutomatedMover
                             confCollection.Clear();
                             //Checkbox is checked, Password and Username have to filled in.
                             confCollection.Add("Username", textBoxUsername.Text);
-                            confCollection.Add("Password", Crypto.EncryptStringAES(textBoxPassword.Text, "s"));
+                            confCollection.Add("Password", Crypto.EncryptStringAES(textBoxPassword.Text, Core.Salt()));
                         }
 
                         //configManager.ConnectionStrings.ConnectionStrings.Add(new ConnectionStringSettings("Password",textBoxPassword.Text));
