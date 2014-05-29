@@ -9,6 +9,11 @@ namespace SingleFolderAutomatedMover
 {
     public static class Core
     {
+        public static string Salt()
+        {
+            return "dtvFdrtkvc74NDVT040xSYiae401tKAfeT9t1XSQwuwtQbITnLRXDnE5iiUhJHL3krA4vWhVN3vLRbYIrEbLmMMIxJ8XigXDRcanIVj8Q8A8626zda3YeY10dOpUvQfoyaefwVSc7tIs7YWI2ix1CwQbhHA0xuQWHSQPohdzEwLZgLJWYsT9dAFhzXA1mjc3uZftgWv4";
+        }
+
         public static bool IsSubfolder(string parentPath, string childPath)
         {
             var parentUri = new Uri(parentPath);
@@ -27,5 +32,6 @@ namespace SingleFolderAutomatedMover
 
             return false;
         }
+
     }
 }

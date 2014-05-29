@@ -76,6 +76,7 @@ namespace SingleFolderAutomatedMover
         {
             //Load configuration
             Configuration configManager = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
             if (ConfigurationManager.AppSettings["RequiresDifferentCredentials"] != "true")
             {
                 if (ConfigurationManager.AppSettings["Path From"] == ConfigurationManager.AppSettings["Path to"] &&
@@ -95,7 +96,7 @@ namespace SingleFolderAutomatedMover
                 MoveRule = new MoveRule(ConfigurationManager.AppSettings["Path From"],
                     ConfigurationManager.AppSettings["Path To"],
                     ConfigurationManager.AppSettings["Username"],
-                    Crypto.DecryptStringAES(ConfigurationManager.AppSettings["Password"], "s"), true);
+                    Crypto.DecryptStringAES(ConfigurationManager.AppSettings["Password"], Core.Salt()), true);
             }
         }
 
