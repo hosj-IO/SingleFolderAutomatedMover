@@ -146,10 +146,15 @@ namespace SingleFolderAutomatedMover
             }
         }
 
-        private void LogtoListBox(string p)
+        private void LogtoListBox(string textToLog)
         {
             Invoke((MethodInvoker)(() =>
-                                       listBoxLogging.Items.Insert(0, p)));
+                                       listBoxLogging.Items.Insert(0, textToLog)));
+        }
+
+        private void LogtoBalloon(string title, string text)
+        {
+            notifyIconMain.ShowBalloonTip(3000, title, text, ToolTipIcon.Info);
         }
 
         private void buttonStop_Click(object sender, EventArgs e)
@@ -240,6 +245,7 @@ namespace SingleFolderAutomatedMover
 
             Microsoft.VisualBasic.FileIO.FileSystem.MoveFile(fullPath, toPath, Microsoft.VisualBasic.FileIO.UIOption.AllDialogs);
             LogtoListBox(fullPath + " has been moved to remote location.");
+            LogtoBalloon("File has been moved.", fullPath + " has been moved.");
 
         }
 
@@ -285,9 +291,3 @@ namespace SingleFolderAutomatedMover
     }
 }
 
-/*
- * TODO
- * Disable using from and to as the same.
- * Show balloon when something is moved.
- * Jump open on error.
-*/
