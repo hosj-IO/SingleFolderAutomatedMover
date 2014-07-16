@@ -60,11 +60,13 @@ namespace SingleFolderAutomatedMover
                     else
                     {
                         LoadConfig(confCollection);
+                        ReloadConfigInfo(confCollection);
                     }
                 }
                 else
                 {
                     LoadConfig(confCollection);
+                    ReloadConfigInfo(confCollection);
 
                 }
             }
@@ -76,6 +78,23 @@ namespace SingleFolderAutomatedMover
 
             notifyIconMain.Icon = Icon;
             notifyIconMain.Text = Resources.FormMain_FormMain_Load_Simple_AutoMover;
+        }
+
+        private void ReloadConfigInfo(KeyValueConfigurationCollection confCollection)
+        {
+            textBoxFromInfo.Text = ConfigurationManager.AppSettings["Path From"];
+            textBoxToInfo.Text = ConfigurationManager.AppSettings["Path to"];
+            if (ConfigurationManager.AppSettings["RequiresDifferentCredentials"] != "true")
+            {
+                labelConfUserForm.Visible = false;
+                textBoxUserInfo.Visible = false;
+            }
+            else
+            {
+                textBoxUserInfo.Text = ConfigurationManager.AppSettings["Username"];
+                labelConfUserForm.Visible = true;
+                textBoxUserInfo.Visible = true;
+            }
         }
 
         private void LoadConfig(KeyValueConfigurationCollection confCollection)
@@ -340,7 +359,7 @@ namespace SingleFolderAutomatedMover
             if (formConfig.ShowDialog() == DialogResult.OK)
             {
                 LoadConfig(confCollection);
-
+                ReloadConfigInfo(confCollection);
             }
         }
 

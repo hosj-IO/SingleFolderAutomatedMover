@@ -36,6 +36,12 @@
             this.listBoxLogging = new System.Windows.Forms.ListBox();
             this.notifyIconMain = new System.Windows.Forms.NotifyIcon(this.components);
             this.buttonConfiguration = new System.Windows.Forms.Button();
+            this.labelConfInfoFrom = new System.Windows.Forms.Label();
+            this.labelConfInfoTo = new System.Windows.Forms.Label();
+            this.textBoxToInfo = new System.Windows.Forms.TextBox();
+            this.textBoxFromInfo = new System.Windows.Forms.TextBox();
+            this.textBoxUserInfo = new System.Windows.Forms.TextBox();
+            this.labelConfUserForm = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // buttonStart
@@ -92,11 +98,68 @@
             this.buttonConfiguration.UseVisualStyleBackColor = true;
             this.buttonConfiguration.Click += new System.EventHandler(this.buttonConfiguration_Click);
             // 
+            // labelConfInfoFrom
+            // 
+            this.labelConfInfoFrom.AutoSize = true;
+            this.labelConfInfoFrom.Location = new System.Drawing.Point(304, 15);
+            this.labelConfInfoFrom.Name = "labelConfInfoFrom";
+            this.labelConfInfoFrom.Size = new System.Drawing.Size(33, 13);
+            this.labelConfInfoFrom.TabIndex = 7;
+            this.labelConfInfoFrom.Text = "From:";
+            // 
+            // labelConfInfoTo
+            // 
+            this.labelConfInfoTo.AutoSize = true;
+            this.labelConfInfoTo.Location = new System.Drawing.Point(304, 41);
+            this.labelConfInfoTo.Name = "labelConfInfoTo";
+            this.labelConfInfoTo.Size = new System.Drawing.Size(23, 13);
+            this.labelConfInfoTo.TabIndex = 8;
+            this.labelConfInfoTo.Text = "To:";
+            // 
+            // textBoxToInfo
+            // 
+            this.textBoxToInfo.Enabled = false;
+            this.textBoxToInfo.Location = new System.Drawing.Point(343, 38);
+            this.textBoxToInfo.Name = "textBoxToInfo";
+            this.textBoxToInfo.Size = new System.Drawing.Size(432, 20);
+            this.textBoxToInfo.TabIndex = 10;
+            // 
+            // textBoxFromInfo
+            // 
+            this.textBoxFromInfo.Enabled = false;
+            this.textBoxFromInfo.Location = new System.Drawing.Point(343, 12);
+            this.textBoxFromInfo.Name = "textBoxFromInfo";
+            this.textBoxFromInfo.Size = new System.Drawing.Size(432, 20);
+            this.textBoxFromInfo.TabIndex = 11;
+            // 
+            // textBoxUserInfo
+            // 
+            this.textBoxUserInfo.Enabled = false;
+            this.textBoxUserInfo.Location = new System.Drawing.Point(343, 64);
+            this.textBoxUserInfo.Name = "textBoxUserInfo";
+            this.textBoxUserInfo.Size = new System.Drawing.Size(432, 20);
+            this.textBoxUserInfo.TabIndex = 13;
+            // 
+            // labelConfUserForm
+            // 
+            this.labelConfUserForm.AutoSize = true;
+            this.labelConfUserForm.Location = new System.Drawing.Point(304, 67);
+            this.labelConfUserForm.Name = "labelConfUserForm";
+            this.labelConfUserForm.Size = new System.Drawing.Size(32, 13);
+            this.labelConfUserForm.TabIndex = 12;
+            this.labelConfUserForm.Text = "User:";
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(905, 334);
+            this.Controls.Add(this.textBoxUserInfo);
+            this.Controls.Add(this.labelConfUserForm);
+            this.Controls.Add(this.textBoxFromInfo);
+            this.Controls.Add(this.textBoxToInfo);
+            this.Controls.Add(this.labelConfInfoTo);
+            this.Controls.Add(this.labelConfInfoFrom);
             this.Controls.Add(this.buttonConfiguration);
             this.Controls.Add(this.listBoxLogging);
             this.Controls.Add(this.buttonStop);
@@ -120,6 +183,12 @@
         private System.Windows.Forms.ListBox listBoxLogging;
         private System.Windows.Forms.NotifyIcon notifyIconMain;
         private System.Windows.Forms.Button buttonConfiguration;
+        private System.Windows.Forms.Label labelConfInfoFrom;
+        private System.Windows.Forms.Label labelConfInfoTo;
+        private System.Windows.Forms.TextBox textBoxToInfo;
+        private System.Windows.Forms.TextBox textBoxFromInfo;
+        private System.Windows.Forms.TextBox textBoxUserInfo;
+        private System.Windows.Forms.Label labelConfUserForm;
     }
 }
 
