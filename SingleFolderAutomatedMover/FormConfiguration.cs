@@ -45,6 +45,8 @@ namespace SingleFolderAutomatedMover
                 textBoxUsername.Visible = true;
                 textBoxPassword.Visible = true;
 
+                checkBoxCred.Checked = true;
+
                 textBoxUsername.Text = ConfigurationManager.AppSettings["Username"];
                 textBoxPassword.Text = "******";
                 labelPasswordChange.Visible = true;
