@@ -5,7 +5,11 @@ using System.Windows.Forms;
 using System.Configuration;
 
 using SingleFolderAutomatedMover.Properties;
-using System.Runtime.InteropServices; // DllImport
+using System.Runtime.InteropServices;
+using System.Collections.Generic;
+
+using System.Timers;
+using System.Linq;// DllImport
 //using System.Security.Permissions; // PermissionSetAttribute
 
 
@@ -16,6 +20,7 @@ namespace SingleFolderAutomatedMover
     {
         private FileSystemWatcher _fsw;
         private bool isRunning = false;
+        private List<string> fileQueue;
         //private const int LOGON_TYPE_NEW_CREDENTIALS = 9;
         //private const int LOGON32_PROVIDER_WINNT50 = 3;
 
@@ -38,32 +43,33 @@ namespace SingleFolderAutomatedMover
             Text = Resources.FormMain_FormMain_Load_Automated_Mover;
             FormBorderStyle = FormBorderStyle.FixedSingle;
             buttonStop.Enabled = false;
-            try { 
-            Configuration configManager = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            KeyValueConfigurationCollection confCollection = configManager.AppSettings.Settings;
-
-            if (confCollection.Count == 0)
+            try
             {
-                MessageBox.Show(Resources.FormMain_FormMain_Load_Configuration_not_found__opening_the_settings_windows_);
-                var formConfig = new FormConfiguration();
-                if (formConfig.ShowDialog() != DialogResult.OK)
+                Configuration configManager = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                KeyValueConfigurationCollection confCollection = configManager.AppSettings.Settings;
+
+                if (confCollection.Count == 0)
                 {
-                    MessageBox.Show(Resources.FormMain_FormMain_Load_No_settings_saved__stopping_program_);
-                    Application.Exit();
+                    MessageBox.Show(Resources.FormMain_FormMain_Load_Configuration_not_found__opening_the_settings_windows_);
+                    var formConfig = new FormConfiguration();
+                    if (formConfig.ShowDialog() != DialogResult.OK)
+                    {
+                        MessageBox.Show(Resources.FormMain_FormMain_Load_No_settings_saved__stopping_program_);
+                        Application.Exit();
+                    }
+                    else
+                    {
+                        LoadConfig(confCollection);
+                    }
                 }
                 else
                 {
                     LoadConfig(confCollection);
+
                 }
             }
-            else
-            {
-                LoadConfig(confCollection);
-
-            }
-            }
             catch (Exception ex)
-            {                
+            {
                 Application.Exit();
             }
 
@@ -119,6 +125,53 @@ namespace SingleFolderAutomatedMover
             buttonStart.Enabled = false;
             listBoxLogging.Items.Insert(0, Resources.FormMain_button_ServiceHasStarted);
             isRunning = true;
+            fileQueue = new List<string>();
+
+            System.Timers.Timer aTimer = new System.Timers.Timer();
+            aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            aTimer.Interval = 1000;
+            aTimer.Enabled = true;
+        }
+
+        private void OnTimedEvent(object sender, ElapsedEventArgs e)
+        {
+            if (fileQueue != null && fileQueue.Count != 0)
+            {
+                var queueClone = fileQueue.Distinct().ToList();
+                queueClone = RemoveFolders(queueClone);
+                
+                foreach (var file in queueClone)
+                {
+                    if (MoveRule.RequiresDifferentCredentials)
+                    {
+                        DoWorkUnderImpersonation(file);
+                    }
+                    else
+                    {
+                        DoWork(file);
+                    }
+                }
+                fileQueue.Clear();
+            }
+        }
+
+        private List<string> RemoveFolders(List<string> queueClone)
+        {
+            List<string> directoryPaths = new List<string>();
+            foreach (var item in queueClone)
+            {
+                if((File.GetAttributes(item) & FileAttributes.Directory)
+                 == FileAttributes.Directory)
+                {
+                    directoryPaths.Add(item);
+                }
+            }
+            foreach (var item in directoryPaths)
+            {
+                queueClone.Remove(item);
+            }
+
+            return queueClone;
         }
 
         private void fsw_Changed(object sender, FileSystemEventArgs e)
@@ -126,24 +179,21 @@ namespace SingleFolderAutomatedMover
             try
             {
 
-                _fsw.EnableRaisingEvents = false;
+                //_fsw.EnableRaisingEvents = false;
                 //MoveFile(e.FullPath);
-                if (MoveRule.RequiresDifferentCredentials)
-                {
-                    DoWorkUnderImpersonation(e.FullPath);
-                }
-                else
-                {
-                    DoWork(e.FullPath);
-                }
+                fileQueue.Add(e.FullPath);
 
 
 
             }
-            finally
+            catch (Exception ex)
+            {
+
+            }
+            /*finally
             {
                 _fsw.EnableRaisingEvents = true;
-            }
+            }*/
         }
 
         private void LogtoListBox(string textToLog)
@@ -171,6 +221,7 @@ namespace SingleFolderAutomatedMover
             buttonStop.Enabled = false;
             listBoxLogging.Items.Insert(0, Resources.FormMain_buttonStop_Click_);
             isRunning = false;
+            fileQueue.Clear();
         }
 
         public void DoWorkUnderImpersonation(string fullpath)
@@ -242,11 +293,16 @@ namespace SingleFolderAutomatedMover
         {
             var toPath = MoveRule.PathTo + "\\" + Path.GetFileName(fullPath);
             //everything in here has elevated privileges
-
-            Microsoft.VisualBasic.FileIO.FileSystem.MoveFile(fullPath, toPath, Microsoft.VisualBasic.FileIO.UIOption.AllDialogs);
-            LogtoListBox(fullPath + " has been moved to remote location.");
-            LogtoBalloon("File has been moved.", fullPath + " has been moved.");
-
+            try
+            {
+                Microsoft.VisualBasic.FileIO.FileSystem.MoveFile(fullPath, toPath, Microsoft.VisualBasic.FileIO.UIOption.AllDialogs);
+                LogtoListBox(fullPath + " has been moved to remote location.");
+                LogtoBalloon("File has been moved.", fullPath + " has been moved.");
+            }
+            catch (Exception ex)
+            {
+                LogtoListBox("Failed to move file: " + fullPath);
+            }
         }
 
         private void FormMain_Resize(object sender, EventArgs e)
